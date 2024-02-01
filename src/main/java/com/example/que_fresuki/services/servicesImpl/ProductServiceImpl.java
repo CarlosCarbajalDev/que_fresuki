@@ -1,9 +1,12 @@
 package com.example.que_fresuki.services.servicesImpl;
 
 import com.example.que_fresuki.entitys.models.Product;
+import com.example.que_fresuki.entitys.models.RawMaterial;
 import com.example.que_fresuki.exceptions.InvalidProductExceptions;
 import com.example.que_fresuki.exceptions.NotFoundProductExceptions;
+import com.example.que_fresuki.exceptions.rawMaterialExceptions.NotFoundRawMaterialExceptions;
 import com.example.que_fresuki.repositorys.IProductRepository;
+import com.example.que_fresuki.repositorys.IRawMaterialRepository;
 import com.example.que_fresuki.services.ProductService;
 import com.example.que_fresuki.utils.Message;
 import lombok.NonNull;
@@ -23,9 +26,12 @@ import java.util.Optional;
 public class ProductServiceImpl implements ProductService {
 
     private final IProductRepository repository;
+    private final IRawMaterialRepository repositoryRawMaterial;
+
     @Autowired
-    public ProductServiceImpl(IProductRepository repository){
+    public ProductServiceImpl(IProductRepository repository, IRawMaterialRepository repositoryRawMaterial){
         this.repository = repository;
+        this.repositoryRawMaterial = repositoryRawMaterial;
     }
 
 
@@ -50,7 +56,13 @@ public class ProductServiceImpl implements ProductService {
         if(productId.isPresent()){
             throw new InvalidProductExceptions(Message.PRODUCT_ALREADY_EXISTS,HttpStatus.CONFLICT.value(),HttpStatus.CONFLICT);
         }
+
+        for (RawMaterial rawMaterial: body.getRawMaterials()) {
+           RawMaterial currentRawMaterial = repositoryRawMaterial.findById(rawMaterial.getId()).orElseThrow(() -> new NotFoundRawMaterialExceptions(Message.NOT_FOUND_RAW_MATERIAL, HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND));;
+           currentRawMaterial.setTotalQuantity(currentRawMaterial.getTotalQuantity());
+        }
         log.info("SAVE Product");
+
         return repository.save(body);
     }
     @Transactional
@@ -70,4 +82,5 @@ public class ProductServiceImpl implements ProductService {
         repository.delete(product);
 
     }
+
 }

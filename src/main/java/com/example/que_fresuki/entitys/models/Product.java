@@ -1,6 +1,10 @@
 package com.example.que_fresuki.entitys.models;
 
 import com.example.que_fresuki.utils.enums.Tamanio;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,6 +19,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "products")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +33,13 @@ public class Product {
 
     private String size;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<Ingredient> ingredients;
+
+    @ManyToMany(cascade = CascadeType.MERGE)
+    @JoinTable(
+            name = "product_raw_material",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "raw_material_id")
+    )
+    //@JsonManagedReference
+    private List<RawMaterial> rawMaterials;
 }

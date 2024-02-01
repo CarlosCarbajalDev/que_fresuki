@@ -16,13 +16,13 @@ public class Ingredient {
 
     private String name;
 
-    @ManyToOne
+    /*@ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
 
     @ManyToOne
     @JoinColumn(name = "raw_material_id")
-    private RawMaterial rawMaterial;
+    private RawMaterial rawMaterial;*/
 
     private Double quantity;
 }
