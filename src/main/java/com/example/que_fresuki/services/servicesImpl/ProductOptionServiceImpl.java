@@ -44,21 +44,45 @@ public class ProductOptionServiceImpl implements ProductOptionService{
         return productOptionRepository.findById(id).orElseThrow( () -> new NotFoundProductOptionExceptions(Message.NOT_FOUND_PRODUCT_OPTION, HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND) );
     }
 
+    /**
+     * Guarda un ProductOption en la base de datos.
+     * 
+     * @param productOption El ProductOption a guardar.
+     * @return El ProductOption guardado.
+     * @throws NotFoundProductOptionExceptions Si ya existe un ProductOption con el mismo nombre.
+     */
     @Override
     public ProductOption saveProductOption(ProductOption productOption) {
+        // Obtiene el OptionLevel del ProductOption
         OptionLevel optionLevel = productOption.getOptionLevel();
+
+        // Si el OptionLevel no es nulo
         if(optionLevel != null) {
-            optionLevel = optionLevelRepository.save(optionLevel);
-            productOption.setOptionLevel(optionLevel);
+            // Busca un OptionLevel existente con el mismo nombre
+            Optional<OptionLevel> existingOptionLevel = optionLevelRepository.findByNameIgnoreCase(optionLevel.getName());
+
+            // Si el OptionLevel existe, lo establece en el ProductOption
+            if (existingOptionLevel.isPresent()) {
+                productOption.setOptionLevel(existingOptionLevel.get());
+            } else {
+                // Si el OptionLevel no existe, lo guarda en la base de datos y lo establece en el ProductOption
+                optionLevel = optionLevelRepository.save(optionLevel);
+                productOption.setOptionLevel(optionLevel);
+            }
         }
 
+        // Busca un ProductOption existente con el mismo nombre
         Optional<ProductOption> existingProductOption = productOptionRepository.findByNameIgnoreCase(productOption.getName());
 
+        // Si el ProductOption existe, lanza una excepción
         if(existingProductOption.isPresent() ) {
             throw new NotFoundProductOptionExceptions(Message.PRODUCT_OPTION_ALREADY_EXISTS, HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT);
         }
 
+        // Registra en el log que se va a guardar el ProductOption
         log.info("SAVE ProductOption");
+
+        // Guarda el ProductOption en la base de datos y lo devuelve
         return productOptionRepository.save(productOption);
     }
 

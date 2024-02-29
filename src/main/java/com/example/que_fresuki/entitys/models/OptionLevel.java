@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -23,5 +25,6 @@ public class OptionLevel {
     private String name;
 
     @OneToMany(mappedBy = "optionLevel")
+    @JsonManagedReference
     private List<ProductOption> options;
 }

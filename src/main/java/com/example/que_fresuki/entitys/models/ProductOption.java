@@ -1,5 +1,7 @@
 package com.example.que_fresuki.entitys.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,5 +32,6 @@ public class ProductOption {
 
     @ManyToOne
     @JoinColumn(name = "option_level_id")
+    @JsonBackReference
     private OptionLevel optionLevel;
 }
