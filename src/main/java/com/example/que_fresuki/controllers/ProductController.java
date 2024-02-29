@@ -44,7 +44,7 @@ public class ProductController {
     }
 
     //Add new product
-    @PostMapping(path = "/products")
+    @PostMapping(path = "/products", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Product> postNewProduct(@RequestBody Product body){
         return ResponseEntity.status(HttpStatus.CREATED).body(service.saveProduct(body));
     }

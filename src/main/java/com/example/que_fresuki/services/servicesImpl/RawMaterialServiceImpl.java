@@ -22,7 +22,6 @@ import java.util.Optional;
 @Service
 @Log4j2
 public class RawMaterialServiceImpl implements RawMaterialService {
-
     private final IRawMaterialRepository rawMaterialRepository;
 
     @Autowired
